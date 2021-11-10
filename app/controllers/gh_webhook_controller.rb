@@ -16,11 +16,14 @@ class GhWebhookController < ApplicationController
       return
     end
     FileUtils.mkdir_p(dir) unless File.exists?(dir)
-    if !data['repository']['private'] and setting['github_user'] == '' then
+    if data['repository']['private'] and setting['github_user'] == '' then
       puts 'cloning private repo with no auth info'
       return
     end
-    repo = data['repository']['clone_url'].gsub("://", "://#{CGI.escape(setting["github_user"])}:#{CGI.escape(setting["github_token"])}@")
+    repo = data['repository']['clone_url']
+    if data['repository']['private'] then
+      repo = repo.gsub("://", "://#{CGI.escape(setting["github_user"])}:#{CGI.escape(setting["github_token"])}@")
+    end
     cmd = "git clone --bare #{repo}"
     puts cmd
     spawn(cmd, chdir: dir)
