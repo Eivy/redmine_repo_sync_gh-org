@@ -1,6 +1,6 @@
 class GhWebhookController < ApplicationController
 
-  skip_before_action :verify_authenticity_token
+  skip_before_action :verify_authenticity_token, :check_if_login_required
   wrap_parameters format: [:json]
 
   def handler
