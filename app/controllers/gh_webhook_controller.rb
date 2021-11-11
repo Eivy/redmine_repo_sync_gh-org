@@ -4,6 +4,10 @@ class GhWebhookController < ApplicationController
   wrap_parameters format: [:json]
 
   def handler
+    puts request.headers["X-GitHub-Event"] 
+    if request.headers["X-GitHub-Event"] != "repository" then
+      return
+    end
     data = params['gh_webhook']
     if data['action'] != "created" then
       puts 'not created event'
