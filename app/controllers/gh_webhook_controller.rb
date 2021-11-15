@@ -38,6 +38,9 @@ class GhWebhookController < ApplicationController
       projects.each do |project|
         project.repositories.each do |repo|
           if repo.url == name then
+            cmd = "git -C #{repo.url} fetch origin 'refs/heads/*:refs/heads/*' --prune"
+            i = spawn(cmd)
+            Process.wait i
             repo.fetch_changesets
           end
         end
