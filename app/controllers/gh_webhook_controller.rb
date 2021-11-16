@@ -23,17 +23,18 @@ class GhWebhookController < ApplicationController
         return
       end
       repo = data['repository']['clone_url']
+      name = data['repository']['full_name']
       if data['repository']['private'] then
         repo = repo.gsub("://", "://#{CGI.escape(setting["github_user"])}:#{CGI.escape(setting["github_token"])}@")
       end
-      cmd = "git clone --bare #{repo}"
+      cmd = "git clone --bare #{repo} #{name}"
       puts cmd
       spawn(cmd, chdir: dir)
     end
     if request.headers["X-GitHub-Event"] == "push" then
       setting = Setting.plugin_redmine_repo_sync_gh_org
       data = params['gh_webhook']
-      name = File.join(setting['repository_root'], data['repository']['clone_url'].split('/').last)
+      name = File.join(setting['repository_root'], data['repository']['full_name'])
       projects = Project.active.has_module(:repository)
       projects.each do |project|
         project.repositories.each do |repo|
