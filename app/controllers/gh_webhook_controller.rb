@@ -30,6 +30,9 @@ class GhWebhookController < ApplicationController
       cmd = "git clone --bare #{repo} #{name}"
       puts cmd
       spawn(cmd, chdir: dir)
+      cmd = "git -C #{name} config remote.origin.fetch '+refs/heads/*:refs/heads/*'"
+      puts cmd
+      spawn(cmd, chdir: dir)
     end
     if request.headers["X-GitHub-Event"] == "push" then
       setting = Setting.plugin_redmine_repo_sync_gh_org
